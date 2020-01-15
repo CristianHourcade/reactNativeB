@@ -119,7 +119,7 @@ export default class MyAccountScreen extends Component<any> {
                         </View>
                     </View>
                 </ScrollView>
-                <NavbarComponent props={this.props} />
+                <NavbarComponent props={this.props} data={'account'} />
 
             </View>
         )

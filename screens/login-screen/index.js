@@ -184,8 +184,8 @@ export default class LoginScreen extends Component<any> {
                     <View style={styles.containerData}>
                         <View style={StylesGlobal.container}>
                             <View style={styles.contTitle}>
-                                <Image source={require('../../assets/logo.png')}
-                                    style={{ width: 130, height: 130, paddingTop: 20, alignSelf: 'center' }} />
+                                <Image source={require('../../assets/logo_ry.png')}
+                                    style={{ width: 260, resizeMode:'contain',height:160, alignSelf: 'center' }} />
                                 <Text style={styles.title}>¡Bienvenido a Rentify! </Text>
                                 <Text style={styles.hash}>#SomosRentify</Text>
                             </View>
@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: 'font2',
         fontSize: 32,
+        marginTop:15,
         color: 'white',
         textAlign: 'center',
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     },
     btnGoogle: {
         backgroundColor: 'white',
-        borderRadius: 50,
+        borderRadius: 8,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     },
     btnFB: {
         backgroundColor: '#2D5BC1',
-        borderRadius: 50,
+        borderRadius: 8,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

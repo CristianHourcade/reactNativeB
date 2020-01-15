@@ -17,28 +17,36 @@ var width = Dimensions.get('window').width; //full width
 
 export default class NavbarComponent extends Component<any> {
 
-    constructor(props){
+    constructor(props) {
         super(props)
     }
-    state={
-        navActive: 0
+    state = {
+        navActive: null
     }
 
     render() {
+
         return (
             <View style={styles.navbar}>
                 <View style={styles.itemNav}>
-                    <TouchableOpacity onPress={() => {this.props.props.navigation.navigate("Home")}}>
+                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate("Home"); this.setState({ navActive: 1 }) }}>
                         <Image source={require('../../assets/icons/home.png')} style={{ width: 30, height: 30 }} />
                     </TouchableOpacity>
+                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'home' ? '#ff5d5a' : 'gray' }}>Inicio</Text>
                 </View>
                 <View style={styles.itemNav}>
-                    <Image source={require('../../assets/icons/chat.png')} style={{ width: 30, height: 30 }} />
-
+                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate('Action'); this.setState({ navActive: 2 }) }}>
+                        <Image source={require('../../assets/icons/chat.png')} style={{ width: 30, height: 30 }} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'action' ? '#ff5d5a' : 'gray' }}>Reservas y mensajes</Text>
                 </View>
-                <TouchableOpacity style={styles.itemNav} onPress={() => {this.props.props.navigation.navigate("Account")}}>
-                    <Image source={require('../../assets/icons/user-1.png')} style={{ width: 30, height: 30,}} />
-                </TouchableOpacity>
+                <View style={styles.itemNav}>
+                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate("Account") }}>
+                        <Image source={require('../../assets/icons/user-1.png')} style={{ width: 30, height: 30, }} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'account' ? '#ff5d5a' : 'gray' }}>Mi Perfil</Text>
+                </View>
+
             </View>
         );
     }

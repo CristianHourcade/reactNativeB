@@ -50,7 +50,7 @@ export function addProduct(product: Product) {
 }
 
 /** Tomar producto segun una key **/
-export function getProductsByKey(key: string) {
+export async function getProductsByKey(key: string) {
     let auxProducts = {};
 
     const dbFirestore = firebase.firestore();

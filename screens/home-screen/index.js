@@ -92,6 +92,7 @@ export default class HomeScreen extends Component<any> {
         }
     }
 
+   
     async componentDidMount() {
         await Calendar.requestPermissionsAsync();
         await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -290,7 +291,7 @@ export default class HomeScreen extends Component<any> {
 
                     </View>
                 </ScrollView>
-                <NavbarComponent props={this.props} />
+                <NavbarComponent props={this.props} data={'home'}/>
 
             </View>
         );

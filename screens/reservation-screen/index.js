@@ -3,10 +3,9 @@ import { StyleSheet, Platform, Text, TextInput, Switch, View, TouchableOpacity, 
 import CalendarPicker from 'react-native-calendar-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
-import { getClientsByKeyPantallaProducto } from '../../utilities/ClientsModule';
+import { getClientsByKeyPantallaProducto, getClientsByKey } from '../../utilities/ClientsModule';
 import { getProductsWithKey, updateProduct } from '../../utilities/ProductsModule';
 import { WebView } from 'react-native-webview';
-var mercadopago = require('mercadopago');
 
 var width = Dimensions.get('window').width;
 var height = Dimensions.get('window').height;
@@ -40,29 +39,12 @@ export default class ReservationScreen extends Component<any> {
             productUser: null,
             user: null
         };
+
+
         this.onDateChange = this.onDateChange.bind(this);
     }
 
     async componentWillMount() {
-        mercadopago.configure({
-            access_token: 'APP_USR-2427548015768286-110601-97433936a0d80e0baca1c61dc8a9a3df-242652951'
-        });
-        mercadopago.payment.create({
-            description: 'Buying a PS4',
-            transaction_amount: 10500,
-            payment_method_id: 'rapipago',
-            payer: {
-                email: 'test_user_3931694@testuser.com',
-                identification: {
-                    type: 'DNI',
-                    number: '34123123'
-                }
-            }
-        }).then(function (mpResponse) {
-            console.log(mpResponse);
-        }).catch(function (mpError) {
-            console.log(mpError);
-        });
 
         BackHandler.addEventListener('hardwareBackPress', () => {
             if (this.state.webView !== null) {
@@ -84,6 +66,7 @@ export default class ReservationScreen extends Component<any> {
                 })
             });
         })
+
     }
 
     onDateChange(date, type) {
@@ -187,7 +170,15 @@ export default class ReservationScreen extends Component<any> {
             return null;
         }
         if (this.state.webView !== null) {
-            return <WebView source={{ uri: this.state.webView }} startInLoadingState />
+            return <WebView source={{ uri: this.state.webView }}
+                onNavigationStateChange={(e) => {
+                    if (e.title === "Gracias por el pago - Mercado Pago") {
+                        this.setState({ step: 4, webView: null });
+                    } else if (e.title === "Ups, algo salió mal...") {
+                        alert("Error en el pago, volvé a intentarlo luego");
+                    }
+                }}
+                startInLoadingState />
         }
         const { selectedStartDate, selectedEndDate } = this.state;
         const startDate = selectedStartDate ? selectedStartDate.toString() : '';
@@ -208,12 +199,10 @@ export default class ReservationScreen extends Component<any> {
 
                 break;
             case 3:
-                widthProgress = 230;
-                titleText = "3. Precio y beneficios"
                 break;
             case 4:
                 widthProgress = 300;
-                titleText = "4. ¡Felicitaciones!"
+                titleText = "3. ¡Felicitaciones!"
                 break;
         }
         return (
@@ -397,6 +386,38 @@ export default class ReservationScreen extends Component<any> {
                         </View>
                         : null}
 
+                    {this.state.step === 4 ?
+                        <View style={{ marginTop: 45 }}>
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+                                <Image source={require('../../assets/checked.png')} style={{ width: 75, height: 75 }} />
+                            </View>
+                            <View style={{ paddingLeft: 30, paddingRight: 30 }}>
+                                <Text style={{ textAlign: 'center', fontFamily: 'font2', fontSize: 28, color: '#262626' }}>Reserva Acreditada</Text>
+                                <Text style={{ textAlign: 'center', fontFamily: 'font1', color: '#6A6A6A' }}>Ahora contactate con tu rentador para coordinar el CheckIn y CheckOut.</Text>
+                                <TouchableOpacity
+
+                                    style={{
+                                        height: 50,
+                                        width: width - 60,
+                                        marginBottom: 10,
+                                        marginTop: 30,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#ff5d5a',
+                                        borderRadius: 8,
+                                    }}
+                                    onPress={async () => {
+                                        this.props.navigation.navigate("Home");
+                                        const result = await AsyncStorage.getItem('Usuario');
+                                        getClientsByKey(JSON.parse(result), this.props);
+                                    }}
+                                >
+                                    <Text style={{ color: 'white', fontFamily: 'font1', fontSize: 14, position: 'relative', top: 2 }}>Volver</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        : null}
+
                 </ScrollView>
                 {
                     this.state.step === 2 ?
@@ -428,7 +449,7 @@ export default class ReservationScreen extends Component<any> {
                         : null
                 }
 
-            </View>
+            </View >
         );
     }
 }

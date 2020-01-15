@@ -17,9 +17,9 @@ import ListHistorialScreen from '../screens/list-historial-screen';
 import ListMyPropiedadesScreen from '../screens/list-my-propieades-screen';
 import UpdatePropiedadScreen from '../screens/update-propiedad-screen';
 import ReservationScreen from '../screens/reservation-screen';
+import ActionScreen from '../screens/actions-screen';
 
 const AppNavigator = createStackNavigator({
-
     Splash: SplashScreen,
     Login: LoginScreen,
     Home: HomeScreen,
@@ -35,7 +35,9 @@ const AppNavigator = createStackNavigator({
     History: ListHistorialScreen,
     MyProps: ListMyPropiedadesScreen,
     UpdateProp: UpdatePropiedadScreen,
-    Reservation: ReservationScreen
+    Reservation: ReservationScreen,
+    Action:ActionScreen,
+
 }, {
     initialRouteName: 'Splash',
     defaultNavigationOptions: {

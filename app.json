@@ -34,9 +34,9 @@
         ],
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/icon.png",
+        "icon": "./assets/logo_ry.png",
         "splash": {
-            "image": "./assets/logo.png",
+            "image": "./assets/logo_ry.png",
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
         },
