@@ -22,6 +22,7 @@ import * as Permissions from 'expo-permissions';
 import Geocoder from 'react-native-geocoding';
 import * as Calendar from 'expo-calendar';
 import { getReservationsForKey } from '../../utilities/ReservationModule';
+import { createNewChat } from '../../utilities/ChatsModule';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
@@ -81,13 +82,15 @@ export default class ActionScreen extends Component<any> {
     state = {
         activeTab: 1,
         reservations: [],
-        products: []
+        products: [],
+        user: null
     }
 
 
     getListOfReservations = async () => {
         const user = await AsyncStorage.getItem('Usuario');
         let userData = JSON.parse(user);
+        this.setState({ user: userData });
         const reservaData = [];
         const productData = [];
         const data = userData.reservas.map(async e => {
@@ -152,14 +155,51 @@ export default class ActionScreen extends Component<any> {
         }
     }
 
+    createChat = (keyReserva, keyRentador, keyCliente) => {
+        let reservaJSON = null;
+        this.state.reservations.map(e => {
+            if (e.key === keyReserva) {
+                reservaJSON = e;
+            }
+        });
+        if (this.state.user.chat !== undefined) {
+            let aux = false;
+            this.state.user.chat.map(e => {
+                if (e === keyReserva) {
+                    aux = true;
+                }
+            });
+            if (aux) {
+                this.props.navigation.navigate("Message");
+                AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+            } else {
+                createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
+                    AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+                    this.props.navigation.navigate("Message");
+
+                });
+            }
+        } else {
+            createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
+                AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+                this.props.navigation.navigate("Message");
+            });
+        }
+
+    }
+
     render() {
-        if (this.state.products === []) {
+        if (this.state.products.length === 0 || this.state.reservations.length === 0) {
+
             return (
                 <View>
-                    <Text>Sin datos.</Text>
+                    <Spinner
+                        visible={true}
+                        textContent={''} />
                 </View>
             )
         }
+
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
 
@@ -295,7 +335,7 @@ export default class ActionScreen extends Component<any> {
                             {this.state.reservations.map(eDate => {
 
                                 return (
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => { this.createChat(eDate.key, eDate.keyRentador, eDate.keyInquilino); }}>
                                         <View style={{
                                             flex: 1,
                                             borderRadius: 8,
@@ -329,7 +369,7 @@ export default class ActionScreen extends Component<any> {
                         : null}
                 </ScrollView>
                 <NavbarComponent props={this.props} data={'action'} />
-                <View style={{ width: width + 30, height: 50, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
+                <View style={{ width: width + 30, height: 70,paddingTop:20, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 1 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
                         <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Messages</Text>
                     </TouchableOpacity>

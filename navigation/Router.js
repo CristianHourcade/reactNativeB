@@ -18,6 +18,7 @@ import ListMyPropiedadesScreen from '../screens/list-my-propieades-screen';
 import UpdatePropiedadScreen from '../screens/update-propiedad-screen';
 import ReservationScreen from '../screens/reservation-screen';
 import ActionScreen from '../screens/actions-screen';
+import UIMessagesScreen from '../screens/messagesUIScreen';
 
 const AppNavigator = createStackNavigator({
     Splash: SplashScreen,
@@ -37,6 +38,7 @@ const AppNavigator = createStackNavigator({
     UpdateProp: UpdatePropiedadScreen,
     Reservation: ReservationScreen,
     Action:ActionScreen,
+    Message:UIMessagesScreen
 
 }, {
     initialRouteName: 'Splash',

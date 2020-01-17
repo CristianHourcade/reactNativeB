@@ -71,14 +71,14 @@ export async function getProductsByKey(key: string) {
     });
 }
 
-export function getChatByKey(key: string) {
+export async function getChatByKey(key: string) {
     let auxChat = {};
-
+    alert(key);
     const dbFirestore = firebase.firestore();
     var docRef = dbFirestore.collection('chat').doc(key)
     docRef.get().then((doc) => {
         return new Promise((resolve) => {
-            if (doc.exists) {
+            if (!doc.exists) {
                 alert("Sin datos");
             } else {
                 let aux = doc.data;
