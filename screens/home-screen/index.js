@@ -21,6 +21,7 @@ import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import Geocoder from 'react-native-geocoding';
 import * as Calendar from 'expo-calendar';
+import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width - 30; //full width
 
@@ -172,7 +173,7 @@ export default class HomeScreen extends Component<any> {
 
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-
+<Receiver />
                 <ScrollView>
                     <View style={styles.containerData}>
                         <View style={{ marginTop: 15, marginLeft: 30, marginRight: 30 }}>

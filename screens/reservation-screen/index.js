@@ -6,6 +6,7 @@ import { Dimensions } from 'react-native';
 import { getClientsByKeyPantallaProducto, getClientsByKey } from '../../utilities/ClientsModule';
 import { getProductsWithKey, updateProduct } from '../../utilities/ProductsModule';
 import { WebView } from 'react-native-webview';
+import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width;
 var height = Dimensions.get('window').height;
@@ -155,12 +156,15 @@ export default class ReservationScreen extends Component<any> {
         // Para pruebas
         price = 2;
         // --- //
+
         fetch("http://changofree.com/phpServer/newToken.php?precio=" + price + "&keyOwner=" + this.state.product.keyOwner + "&keyCliente=" + this.state.user.$key + "&fechaInicio=" + inicio + "&fechaFin=" + fin + "&keyProduct=" + this.state.product.$key)
             .then((response) => {
                 return response.text();
             })
             .then((data) => {
                 this.setState({ webView: data });
+            }).catch(e => {
+                alert(e)
             })
         // updateProduct(this.state.product);
     }
@@ -207,6 +211,7 @@ export default class ReservationScreen extends Component<any> {
         }
         return (
             <View style={styles.container}>
+                <Receiver />
                 <View style={styles.bar}>
                     <View>
                         <Text style={styles.title}>{titleText}</Text>

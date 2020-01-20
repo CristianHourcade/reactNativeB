@@ -6,6 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import { CheckBox } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Receiver from '../receiverNotification';
 
 
 var width = Dimensions.get('window').width - 30; //full width
@@ -205,6 +206,7 @@ export default class UpdatePropiedadScreen extends Component<any> {
         }
         return (
             <View >
+                <Receiver />
                 {this.state.loading ?
                     <Spinner
                         visible={(this.state.loading)}

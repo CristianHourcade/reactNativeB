@@ -15,6 +15,7 @@ import { CheckBox } from 'react-native-elements';
 import RNPickerSelect from 'react-native-picker-select';
 import { Product } from '../../models/Product';
 import { addProduct } from '../../utilities/ProductsModule';
+import Receiver from '../receiverNotification';
 
 
 var width = Dimensions.get('window').width;
@@ -783,6 +784,7 @@ export default class AddRentScreen extends Component<any> {
         }
         return (
             <View style={styles.splash}>
+                <Receiver />
                 <Spinner
                     visible={this.state.loading}
                     textContent={''} />

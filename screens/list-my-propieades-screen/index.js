@@ -20,6 +20,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import Geocoder from 'react-native-geocoding';
+import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
@@ -147,7 +148,7 @@ export default class ListMyPropiedadesScreen extends Component<any> {
         }
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-
+<Receiver />
                 <View style={styles.containerData}>
                     <TextInput style={styles.inputBuscador} defaultValue={this.state.ubication} placeholderTextColor="#000000" keyboardType='web-search' placeholder="Tus historial de propiedades" />
                     <TouchableOpacity style={{

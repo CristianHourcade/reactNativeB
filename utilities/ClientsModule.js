@@ -108,6 +108,14 @@ export async function getClientsByKeyPantallaProducto(user) {
     })
 }
 
+/** Tomar producto segun una key **/
+export async function getClientsByKeyWithoutRedirection(user) {
+    const dbFirestore = firebase.firestore();
+    var docRef = dbFirestore.collection('clientes').doc(user.$key);
+    docRef.get().then((doc) => {
+        AsyncStorage.setItem("Usuario", JSON.stringify(doc.data()));
+    });
+}
 
 /** Tomar producto segun una key **/
 export async function getClientsByKey(user, prop) {

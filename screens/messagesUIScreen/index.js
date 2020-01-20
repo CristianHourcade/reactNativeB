@@ -111,8 +111,13 @@ export default class UIMessagesScreen extends Component<any> {
 
         this.state.chatJSON.messages.push(messageToSendNow);
         this.forceUpdate();
-
-        updateChat(this.state.chatJSON.razon, this.state.chatJSON);
+        let keyToSend = null;
+        if(this.state.chatJSON.keyCliente === this.state.user.$key){
+            keyToSend = this.state.chatJSON.keyRentador;
+        }else{
+            keyToSend = this.state.chatJSON.keyCliente;
+        }
+        updateChat(this.state.chatJSON.razon, this.state.chatJSON,keyToSend);
     }
 
     render() {

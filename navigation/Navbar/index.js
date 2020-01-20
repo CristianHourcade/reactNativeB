@@ -12,6 +12,7 @@ import MyCarousel from ' ../../../components/BannersCarrousel';
 import CardPropiedadList from '../../components/Cards/cardPropiedadList';
 import CardPropiedadHome from '../../components/Cards/cardPropiedadHome';
 import Sidebar from '../../components/Sidebar';
+import Receiver from '../../screens/receiverNotification';
 var width = Dimensions.get('window').width; //full width
 
 

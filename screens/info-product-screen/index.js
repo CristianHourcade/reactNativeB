@@ -24,6 +24,7 @@ import { Asset } from 'expo-asset';
 import DialogMatch from '../../components/Cards/dialogMatch';
 import DialogMatchAdd from '../../components/Cards/dialogMatchAdd';
 import { updateClient, getClientsByKey, getClientsByKeyPantallaProducto } from '../../utilities/ClientsModule';
+import Receiver from '../receiverNotification';
 var width = Dimensions.get('window').width; //full width
 var he = Dimensions.get('window').height; //full width
 
@@ -164,7 +165,7 @@ export default class InfoProductScreen extends Component<any> {
 
         return (
             <View style={{ position: 'relative', }}>
-
+                <Receiver />
                 <Modal
                     animationType="slide"
                     transparent={true}

@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from './navigation/Router';
 import { createAppContainer } from 'react-navigation';
 import { initializeApp } from './utilities/FirebaseModule';
+import Receiver from './screens/receiverNotification';
 const AppContainer = createAppContainer(AppNavigator);
 
 export default class App extends Component {
@@ -13,7 +14,9 @@ export default class App extends Component {
     return (
 
 
-      <AppContainer />
+        <AppContainer />
+        
+
     );
   }
 }

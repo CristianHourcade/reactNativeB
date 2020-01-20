@@ -23,6 +23,7 @@ import Geocoder from 'react-native-geocoding';
 import * as Calendar from 'expo-calendar';
 import { getReservationsForKey } from '../../utilities/ReservationModule';
 import { createNewChat } from '../../utilities/ChatsModule';
+import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
@@ -93,6 +94,7 @@ export default class ActionScreen extends Component<any> {
         this.setState({ user: userData });
         const reservaData = [];
         const productData = [];
+        alert(JSON.stringify(userData.reservas));
         const data = userData.reservas.map(async e => {
 
             await getReservationsForKey(e).then(eValue => {
@@ -100,7 +102,9 @@ export default class ActionScreen extends Component<any> {
             });
 
         });
+
         await Promise.all(data).then(async e => {
+
             this.setState({ reservations: reservaData });
             const data = this.state.reservations.map(async e => {
                 await getProductsWithKey(e.keyProduct).then(eValueProduct => {
@@ -202,7 +206,7 @@ export default class ActionScreen extends Component<any> {
 
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-
+                <Receiver />
                 <ScrollView>
 
                     {this.state.activeTab === 1 ?
@@ -369,7 +373,7 @@ export default class ActionScreen extends Component<any> {
                         : null}
                 </ScrollView>
                 <NavbarComponent props={this.props} data={'action'} />
-                <View style={{ width: width + 30, height: 70,paddingTop:20, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
+                <View style={{ width: width + 30, height: 70, paddingTop: 20, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 1 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
                         <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Messages</Text>
                     </TouchableOpacity>

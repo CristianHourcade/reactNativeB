@@ -4,6 +4,7 @@ import NavbarComponent from '../../navigation/Navbar';
 import Constants from 'expo-constants';
 import { Dimensions } from "react-native";
 import { NavigationActions } from 'react-navigation';
+import Receiver from '../receiverNotification';
 var width = Dimensions.get('window').width - 30; //full width
 var height = Dimensions.get('window').height  //full width
 
@@ -38,6 +39,7 @@ export default class MyAccountScreen extends Component<any> {
         }
         return (
             <View>
+                <Receiver />
                 <ScrollView>
                     <View style={styles.containerData}>
                         <View style={{ marginTop: 45, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center' }}>

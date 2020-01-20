@@ -61,9 +61,9 @@ export default class LoginScreen extends Component<any> {
                     e.biografia = null;
                     e.edad = null;
                     e.estudio = null;
-                    e.favs = [];
+                    e.favs = [null];
                     e.review = 5;
-                    e.historial = [];
+                    e.historial = [null];
                     e.fechaIngreso = fechaHoy;
                     e.foto = "https://firebasestorage.googleapis.com/v0/b/myspace-632e9.appspot.com/o/uploads%2Fuser.png?alt=media&token=fbcc9384-f4f7-42e2-b5b8-994e73c4e027";
                     Permissions.getAsync(
@@ -128,8 +128,8 @@ export default class LoginScreen extends Component<any> {
             user['biografia'] = null;
             user['edad'] = null;
             user['estudio'] = null;
-            user['favs'] = [];
-            user['historial'] = [];
+            user['favs'] = [null];
+            user['historial'] = [null];
             user['fechaIngreso'] = fechaHoy;
             user['review'] = 5;
             user['token'] = null;

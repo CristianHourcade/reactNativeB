@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Dimensions } from "react-native";
 import Spinner from 'react-native-loading-spinner-overlay';
 import { updateClient } from '../../utilities/ClientsModule';
+import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height  //full width
@@ -109,12 +110,14 @@ export default class UpdateMyProfileScreen extends Component<any> {
 
         return (
             <View>
+                <Receiver />
                 {this.state.loading ?
                     <Spinner
                         visible={(this.state.loading) ? true : false}
                         textContent={''} />
                     : null}
                 <ScrollView>
+
                     <View style={styles.containerData}>
                         <View style={{ marginTop: 30, marginLeft: 30, marginRight: 30 }}>
                             <Text style={{ fontSize: 28, fontFamily: 'font2', textAlign: 'center' }}>Completá tu perfil</Text>
