@@ -3,13 +3,18 @@ import { View, Text, AsyncStorage } from "react-native";
 import { Notifications } from "expo";
 import { getClientsByKeyWithoutRedirection } from "../../utilities/ClientsModule";
 import { Dimensions } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 var width = Dimensions.get('window').width; //full width
 
-export default class Receiver extends Component {
+export default class Receiver extends Component<any> {
 
     constructor(props) {
         super(props)
+    }
+
+    state = {
+        show: false
     }
 
     _notificationSubscription;
@@ -21,20 +26,28 @@ export default class Receiver extends Component {
 
 
     _handleNotification = async notification => {
-        alert(JSON.stringify(notification));
         let x = await AsyncStorage.getItem("Usuario");
         let y = JSON.parse(x);
         getClientsByKeyWithoutRedirection(y.$key);
-        this.forceUpdate()
+        this.setState({ show: true });
+        setTimeout(() => { this.setState({ show: false }) }, 5000)
     };
 
     render() {
 
         return (
-            <View style={{width:width-60, height:30, borderRadius:50, position:'absolute', top:15, left:30, backgroundColor:'#ff5d5ab8', padding:15, paddingTop:25, paddingBottom:25}}>
-                <Text style={{ color:'white'}}>
-                    ¡Tenés una notificación nueva!
-                </Text>
+            <View style={{ width: width - 60, position: 'absolute', top: 15, left: 30, }}>
+                {this.state.show ?
+                    <TouchableOpacity
+                        onPress={() => {
+                            this.props.navigation.navigate('Action')
+                        }}
+                        style={{ width: width - 60, height: 50, borderRadius: 50, backgroundColor: '#ff5d5ae0', padding: 15, justifyContent: 'center', elevation: 15 }}>
+                        <Text style={{ color: 'white', fontFamily: 'font1' }}>
+                            ¡Tenés una nueva notificación!
+                        </Text>
+                    </TouchableOpacity>
+                    : null}
             </View>
         )
     }

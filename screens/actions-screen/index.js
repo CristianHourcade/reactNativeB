@@ -22,61 +22,12 @@ import * as Permissions from 'expo-permissions';
 import Geocoder from 'react-native-geocoding';
 import * as Calendar from 'expo-calendar';
 import { getReservationsForKey } from '../../utilities/ReservationModule';
-import { createNewChat } from '../../utilities/ChatsModule';
+import { createNewChat, getChatByKeyToFindStatus } from '../../utilities/ChatsModule';
 import Receiver from '../receiverNotification';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
 
-
-const barriosPosibles = [
-    'Agronomia',
-    'Almagro',
-    'Balvanera',
-    'Barracas',
-    'Belgrano',
-    'Boedo',
-    'Caballito',
-    'Chacarita',
-    'Coghlan',
-    'Colegiales',
-    'Constitucion',
-    'Flores',
-    'Floresta',
-    'La Boca',
-    'Liniers',
-    'Mataderos',
-    'Monserrat',
-    'Monte Castro',
-    'Nuñez',
-    'Palermo',
-    'Parque Avellaneda',
-    'Parque Chacabuco',
-    'Parque Chas',
-    'Parque Patricios',
-    'Paternal',
-    'Pompeya',
-    'Puerto Madero',
-    'Recoleta',
-    'Retiro',
-    'Saavedra',
-    'San Nicolás',
-    'San Telmo',
-    'Vélez Sárfield',
-    'Versalles',
-    'Villa Crespo',
-    'Villa del parque',
-    'Villa Devoto',
-    'Villa gral mitre',
-    'Villa Lugano',
-    'Villa luro',
-    'Villa ortuzar',
-    'Villa Real',
-    'Villa riachuelo',
-    'Villa santa rita',
-    'Villa soldati',
-    'Villa Urquiza'
-]
 
 export default class ActionScreen extends Component<any> {
 
@@ -84,37 +35,66 @@ export default class ActionScreen extends Component<any> {
         activeTab: 1,
         reservations: [],
         products: [],
-        user: null
+        user: null,
+        isSort: false
     }
 
 
+    async componentWillUpdate() {
+
+    }
+
     getListOfReservations = async () => {
+       
         const user = await AsyncStorage.getItem('Usuario');
         let userData = JSON.parse(user);
         this.setState({ user: userData });
+
         const reservaData = [];
         const productData = [];
-        alert(JSON.stringify(userData.reservas));
+
+        let dataSaved = await AsyncStorage.getItem('ListMensajes');
+        let dataSavedProducts = await AsyncStorage.getItem('Pr');
+
+        if (JSON.parse(dataSaved) !== null && JSON.parse(dataSavedProducts) !== null) {
+            this.setState({ reservations: JSON.parse(dataSaved), products: JSON.parse(dataSavedProducts) });
+            if (await AsyncStorage.getItem('isNotifcationR') == 'true') {
+                this.setState({ activeTab: 2 });
+                AsyncStorage.removeItem('isNotificationR');
+            }
+            return;
+        }
+
         const data = userData.reservas.map(async e => {
-
-            await getReservationsForKey(e).then(eValue => {
-                return reservaData.push(eValue);
+            return getChatByKeyToFindStatus(e).then(async eChat => {
+                if (eChat !== null) {
+                    await getReservationsForKey(e).then(async (eValue: any) => {
+                        await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                            return productData.push(eValueProduct);
+                        })
+                        const result = Object.assign({}, eValue, eChat);
+                        return reservaData.push(result);
+                    });
+                } else {
+                    await getReservationsForKey(e).then(async (eValue: any) => {
+                        await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                            return productData.push(eValueProduct);
+                        })
+                        return reservaData.push(eValue);
+                    });
+                }
             });
-
         });
 
         await Promise.all(data).then(async e => {
+            await AsyncStorage.setItem('Pr', JSON.stringify(productData)).then(async e => {
+                await AsyncStorage.setItem('ListMensajes', JSON.stringify(reservaData)).then(async e => {
+                    this.setState({ reservations: reservaData, products: productData });
+                });
+            })
+        }).then(async edata => {
 
-            this.setState({ reservations: reservaData });
-            const data = this.state.reservations.map(async e => {
-                await getProductsWithKey(e.keyProduct).then(eValueProduct => {
-                    return productData.push(eValueProduct);
-                })
-            });
-            await Promise.all(data).then(e => {
-                this.setState({ products: productData });
-            });
-        });
+        })
     };
 
     getProductInfoFromListLocaly = (key) => {
@@ -192,16 +172,33 @@ export default class ActionScreen extends Component<any> {
 
     }
 
-    render() {
-        if (this.state.products.length === 0 || this.state.reservations.length === 0) {
 
-            return (
-                <View>
-                    <Spinner
-                        visible={true}
-                        textContent={''} />
-                </View>
-            )
+    render() {
+
+
+        if (!this.state.isSort) {
+            let aux = [];
+            this.state.reservations.map(eDate => {
+                if (eDate.messages === undefined) {
+                    aux.push(eDate);
+                }
+            });
+
+            this.state.reservations.map(eDate => {
+                if (eDate.messages[eDate.messages.length - 1].status === 0 && eDate.messages[eDate.messages.length - 1].own !== this.state.user.$key) {
+                    aux.push(eDate);
+                }
+            })
+
+            this.state.reservations.map(eDate => {
+                if (eDate.messages !== undefined) {
+
+                    if ((eDate.messages[eDate.messages.length - 1].status === 1 && eDate.messages[eDate.messages.length - 1].own !== this.state.user.$key) || (eDate.messages[eDate.messages.length - 1].status === 0 && eDate.messages[eDate.messages.length - 1].own === this.state.user.$key)) {
+                        aux.push(eDate);
+                    }
+                }
+            });
+            this.setState({ reservations: aux, isSort: true });
         }
 
         return (
@@ -334,46 +331,62 @@ export default class ActionScreen extends Component<any> {
                                 <Text style={styles.titleSection}>Mis Reservas</Text>
                                 <Text style={styles.descriptionSection}>Encontrá el historial de reservas, pendientes y aprobadas.</Text>
                             </View>
+                            {(this.state.products.length === 0 || this.state.reservations.length === 0) ?
 
+                                <View>
+                                    <Spinner
+                                        visible={true}
+                                        textContent={''} />
+                                </View>
+                                :
+                                this.state.reservations.map(eDate => {
+                                    return (
+                                        <TouchableOpacity onPress={() => { this.createChat(eDate.key, eDate.keyRentador, eDate.keyInquilino); }}>
+                                            <View style={{
+                                                flex: 1,
+                                                borderRadius: 8,
+                                                marginLeft: 15,
+                                                marginRight: 15,
+                                                padding: 15,
+                                                height: 100,
+                                                paddingLeft: 15,
+                                                paddingRight: 30,
+                                                flexDirection: 'row',
+                                            }}>
+                                                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                                                    {eDate.fotoRentador === undefined ?
+                                                        <Image source={require('../../assets/icons/message.png')} style={{ width: 60, height: 60, borderRadius: 100 }} />
+                                                        :
+                                                        <Image source={{ uri: (eDate.keyCliente === this.state.user.$key) ? eDate.fotoRentador : eDate.fotoCliente }} style={{ width: 60, height: 60, borderRadius: 100 }} />
+                                                    }
+                                                    {/* <Image source={{ uri: (eDate.keyCliente === this.state.user.$key) ? eDate.fotoRentador : eDate.fotoCliente }} style={{ width: 60, height: 60, borderRadius: 100 }} /> */}
+                                                    {(eDate.messages === undefined || (eDate.messages[eDate.messages.length - 1].status === 0 && eDate.messages[eDate.messages.length - 1].own !== this.state.user.$key)) ?
+                                                        <View style={{ width: 14, elevation: 14, height: 14, borderRadius: 50, backgroundColor: '#3483fa', position: 'absolute', left: 5, top: 5 }} />
+                                                        : null
+                                                    }
+                                                </View>
+                                                <View style={{ flex: 0.7, paddingLeft: 15 }}>
+                                                    <Text style={{ fontFamily: 'font2', fontSize: 15 }}>Reservaste {this.getProductInfoFromListLocaly(eDate.keyProduct).name} - <Text style={{ color: eDate.status === 3 ? 'green' : '#ff5d5a', fontFamily: 'font1', marginLeft: 5 }}>{this.getStatusReservation(eDate.status)}</Text></Text>
+                                                    <Text style={{ fontFamily: 'font1', fontSize: 12, color: '#6A6A6A' }}>
+                                                        {this.getTextToShowDateReservation(eDate.estadia)}
+                                                    </Text>
 
-                            {this.state.reservations.map(eDate => {
-
-                                return (
-                                    <TouchableOpacity onPress={() => { this.createChat(eDate.key, eDate.keyRentador, eDate.keyInquilino); }}>
-                                        <View style={{
-                                            flex: 1,
-                                            borderRadius: 8,
-                                            marginLeft: 15,
-                                            marginRight: 15,
-                                            padding: 15,
-                                            height: 100,
-                                            paddingLeft: 15,
-                                            paddingRight: 30,
-                                            flexDirection: 'row',
-                                        }}>
-                                            <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center' }}>
-                                                <Image source={{ uri: 'https://lh3.googleusercontent.com/-9TJWKte7-kg/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfZf8UxqORmoZ-flAgXTePmMnPCSw/photo.jpg?sz=46' }} style={{ width: 60, height: 60, borderRadius: 100 }} />
+                                                </View>
+                                                <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'flex-end' }}>
+                                                    <Image source={require('../../assets/arrow_b.png')} style={{ width: 24, height: 24, rotation: 180 }} />
+                                                </View>
                                             </View>
-                                            <View style={{ flex: 0.7, paddingLeft: 15 }}>
-                                                <Text style={{ fontFamily: 'font2', fontSize: 15 }}>{this.getProductInfoFromListLocaly(eDate.keyProduct).name} - <Text style={{ color: eDate.status === 3 ? 'green' : '#ff5d5a', fontFamily: 'font1', marginLeft: 5 }}>{this.getStatusReservation(eDate.status)}</Text></Text>
-                                                <Text style={{ fontFamily: 'font1', fontSize: 12, color: '#6A6A6A' }}>
-                                                    {this.getTextToShowDateReservation(eDate.estadia)}
-                                                </Text>
+                                        </TouchableOpacity>
+                                    )
+                                })
+                            }
 
-                                            </View>
-                                            <TouchableOpacity style={{ flex: 0.1, justifyContent: 'center', alignItems: 'flex-end' }}>
-                                                <Image source={require('../../assets/arrow_b.png')} style={{ width: 24, height: 24, rotation: 180 }} />
-                                            </TouchableOpacity>
-                                        </View>
-                                    </TouchableOpacity>
-                                )
-                            })}
 
                         </View>
                         : null}
                 </ScrollView>
                 <NavbarComponent props={this.props} data={'action'} />
-                <View style={{ width: width + 30, height: 70, paddingTop: 20, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
+                <View style={{ width: width + 30, height: 50, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 1 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
                         <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Messages</Text>
                     </TouchableOpacity>

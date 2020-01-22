@@ -5,7 +5,7 @@ import { Dimensions } from "react-native";
 import NavbarComponent from '../../navigation/Navbar';
 import { getProducts, getProductsWithKey } from '../../utilities/ProductsModule';
 import { getReservationsForKey } from '../../utilities/ReservationModule';
-import { createNewChat, updateChat } from '../../utilities/ChatsModule';
+import { createNewChat, updateChat, getChatByKeyToFindStatus, updateChatWithoutEditUser } from '../../utilities/ChatsModule';
 import { getChatByKey } from '../../utilities/ChatsModule';
 import { getClientsByKeyPantallaProducto } from '../../utilities/ClientsModule';
 import { Notifications } from 'expo';
@@ -50,36 +50,56 @@ export default class UIMessagesScreen extends Component<any> {
             this._keyboardDidHide,
         );
 
-      
+        this.autoNotification();
 
         this._notificationSubscription = Notifications.addListener(this._handleNotification);
 
 
         const dataReserva = await JSON.parse(await AsyncStorage.getItem("chat"));
 
-        getClientsByKeyPantallaProducto(dataReserva.keyRentador).then(e => {
-            getChatByKey(dataReserva.key).then(e => {
+        getClientsByKeyPantallaProducto(dataReserva.keyRentador).then((e: any) => {
+            getChatByKey(dataReserva.key).then((e: any) => {
                 this.setState({ chatJSON: e });
+                if (e.messages !== undefined) {
+                    let x = e.messages[e.messages.length - 1].status;
+                    let y = e.messages[e.messages.length - 1].own;
+                    alert("aca llego")
+                    if (x === 0) {
+                        alert("aca llego1")
+
+                        if (y !== this.state.user.$key) {
+                            alert("aca llego2")
+
+                            this.state.chatJSON.messages[e.messages.length - 1].status = 1;
+                            updateChatWithoutEditUser(this.state.chatJSON.razon, this.state.chatJSON).then( async e => {
+                                await AsyncStorage.setItem('ListMensajes', JSON.stringify(this.state.chatJSON));
+                            })
+
+                        }
+                    }
+                }
             });
             this.setState({ receiber: e });
 
         })
+    }
 
 
-
+    autoNotification = () => {
+        AsyncStorage.setItem('isNotifcationR', 'true');
     }
 
     _handleNotification = async notification => {
         // do whatever you want to do with the notification
         const dataReserva = await JSON.parse(await AsyncStorage.getItem("chat"));
-        
+
         getChatByKey(dataReserva.key).then(e => {
             this.setState({ chatJSON: e });
         });
 
         this.forceUpdate()
     };
-    
+
 
     _keyboardDidShow = (e) => {
         this.setState({ isOpenKeyboard: true, marginKeyboard: e.endCoordinates.height + 28 });
@@ -104,6 +124,7 @@ export default class UIMessagesScreen extends Component<any> {
             time: datetime,
             date: currentdate
         }
+
         this.state.messageToSend = '';
         Keyboard.dismiss();
 
@@ -112,12 +133,51 @@ export default class UIMessagesScreen extends Component<any> {
         this.state.chatJSON.messages.push(messageToSendNow);
         this.forceUpdate();
         let keyToSend = null;
-        if(this.state.chatJSON.keyCliente === this.state.user.$key){
+
+        if (this.state.chatJSON.keyCliente === this.state.user.$key) {
             keyToSend = this.state.chatJSON.keyRentador;
-        }else{
+        } else {
             keyToSend = this.state.chatJSON.keyCliente;
         }
-        updateChat(this.state.chatJSON.razon, this.state.chatJSON,keyToSend);
+
+        updateChat(this.state.chatJSON.razon, this.state.chatJSON, keyToSend).then(async e => {
+
+            const user = await AsyncStorage.getItem('Usuario');
+            let userData = JSON.parse(user);
+
+            const reservaData = [];
+            const productData = [];
+
+            const data = userData.reservas.map(async e => {
+                return getChatByKeyToFindStatus(e).then(async eChat => {
+                    if (eChat !== null) {
+                        await getReservationsForKey(e).then(async (eValue: any) => {
+                            await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                                return productData.push(eValueProduct);
+                            })
+                            const result = Object.assign({}, eValue, eChat);
+                            return reservaData.push(result);
+                        });
+                    } else {
+                        await getReservationsForKey(e).then(async (eValue: any) => {
+                            await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                                return productData.push(eValueProduct);
+                            })
+                            return reservaData.push(eValue);
+                        });
+                    }
+                });
+            });
+            this.autoNotification();
+            await Promise.all(data).then(async e => {
+                await AsyncStorage.setItem('Pr', JSON.stringify(productData)).then(async e => {
+                    await AsyncStorage.setItem('ListMensajes', JSON.stringify(reservaData)).then(async e => {
+                        this.setState({ reservations: reservaData, products: productData });
+                    });
+                })
+            });
+        });
+
     }
 
     render() {
@@ -196,7 +256,7 @@ export default class UIMessagesScreen extends Component<any> {
                     flexDirection: 'row', backgroundColor: 'white'
                 }}>
 
-                    <TouchableOpacity style={{ flex: 0.2, elevation: 11, justifyContent: "center", alignItems: 'flex-start' }} onPress={() => { this.props.navigation.navigate('Action') }}>
+                    <TouchableOpacity style={{ flex: 0.2, elevation: 11, justifyContent: "center", alignItems: 'flex-start' }} onPress={() => { this.props.navigation.replace('Action') }}>
                         <Image source={require('../../assets/arrow_b.png')} style={{ width: 25, height: 25, marginLeft: 15 }} />
                     </TouchableOpacity>
 

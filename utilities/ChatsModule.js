@@ -6,6 +6,8 @@ import { Product } from '../models/Product';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { AsyncStorage } from 'react-native';
 import { Clients } from '../models/Clients';
+import { getReservationsForKey } from './ReservationModule';
+import { getProductsWithKey } from './ProductsModule';
 
 
 /** Clave autogenerada con firebase **/
@@ -25,16 +27,9 @@ export async function createNewChat(keyReserva, keyRentador, keyCliente, user) {
         time: datetime,
         date: currentdate
     }
-    const newChat = {
-        messages: [messageToSendNow],
-        razon: keyReserva,
-        keyRentador: keyRentador,
-        keyCliente: keyCliente,
-        status: 0
-    }
+
 
     const dbFirestore = firebase.firestore();
-    const id = await (await dbFirestore.collection('chat').doc(keyReserva).set(newChat));
 
     if (user.chat === undefined) {
         user.chat = [keyReserva]
@@ -47,26 +42,37 @@ export async function createNewChat(keyReserva, keyRentador, keyCliente, user) {
 
 
     var docRef = dbFirestore.collection('clientes').doc(keyRentador);
-    docRef.get().then((doc) => {
+    docRef.get().then(async (doc) => {
         if (!doc.exists) {
             alert("Surgió un error, volvé a intentarlo en un instante. Si el problema persiste, contacta al equipo de Rentify");
         } else {
-            let user = doc.data();
-            if (user.reservas === undefined) {
-                user.reservas = [keyReserva];
+            let userDos = doc.data();
+            if (userDos.reservas === undefined) {
+                userDos.reservas = [keyReserva];
             } else {
-                user.reservas.push(keyReserva);
+                userDos.reservas.push(keyReserva);
             }
-            if (user.chat === undefined) {
-                user.chat = [keyReserva]
+            if (userDos.chat === undefined) {
+                userDos.chat = [keyReserva]
             } else {
-                user.chat.push(keyReserva);
+                userDos.chat.push(keyReserva);
             }
-            dbFirestore.collection('clientes').doc(user.$key).update(user).then(e => {
-                fetch('http://changofree.com/phpServer/sendNotification.php?type=message&token=' + user.token).then(e => {
+            const newChat = {
+                messages: [messageToSendNow],
+                razon: keyReserva,
+                keyRentador: keyRentador,
+                keyCliente: keyCliente,
+                fotoRentador: userDos.foto,
+                fotoCliente: user.foto,
+                status: 0
+            }
+            await dbFirestore.collection('chat').doc(keyReserva).set(newChat);
+
+            dbFirestore.collection('clientes').doc(user.$key).update(userDos).then(e => {
+                fetch('http://changofree.com/phpServer/sendNotification.php?type=message&token=' + userDos.token).then(e => {
                     alert('se envio');
                 }).catch(e => 'algo fallo');
-            })
+            });
         }
     });
 }
@@ -93,6 +99,44 @@ export async function updateChat(key, message, user) {
 }
 
 
+/** Update chat actual **/
+export async function updateChatWithoutEditUser(key, message) {
+    const dbFirestore = firebase.firestore();
+    await dbFirestore.collection('chat').doc(key).update(message);
+
+    const user = await AsyncStorage.getItem('Usuario');
+    let userData = JSON.parse(user);
+    const productData = [];
+    const reservaData = [];
+    const data = userData.reservas.map(async e => {
+        return getChatByKeyToFindStatus(e).then(async eChat => {
+            if (eChat !== null) {
+                await getReservationsForKey(e).then(async (eValue: any) => {
+                    await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                        return productData.push(eValueProduct);
+                    })
+                    const result = Object.assign({}, eValue, eChat);
+                    return reservaData.push(result);
+                });
+            } else {
+                await getReservationsForKey(e).then(async (eValue: any) => {
+                    await getProductsWithKey(eValue.keyProduct).then(eValueProduct => {
+                        return productData.push(eValueProduct);
+                    })
+                    return reservaData.push(eValue);
+                });
+            }
+        });
+    });
+
+    await Promise.all(data).then(async e => {
+        alert(JSON.stringify(reservaData));
+        await AsyncStorage.setItem('Pr', JSON.stringify(productData)).then(async e => {
+            await AsyncStorage.setItem('ListMensajes', JSON.stringify(reservaData));
+        })
+    });
+}
+
 
 /** Tomar producto segun una key **/
 export async function getChatByKey(key) {
@@ -103,6 +147,22 @@ export async function getChatByKey(key) {
         docRef.get().then((doc) => {
             if (!doc.exists) {
                 alert("Surgió un error, volvé a intentarlo en un instante. Si el problema persiste, contacta al equipo de Rentify");
+            } else {
+                resolve(doc.data());
+            }
+        });
+    })
+}
+
+
+export async function getChatByKeyToFindStatus(key) {
+    return new Promise(resolve => {
+
+        const dbFirestore = firebase.firestore();
+        var docRef = dbFirestore.collection('chat').doc(key);
+        docRef.get().then((doc) => {
+            if (!doc.exists) {
+                resolve(null)
             } else {
                 resolve(doc.data());
             }

@@ -93,7 +93,7 @@ export default class HomeScreen extends Component<any> {
         }
     }
 
-   
+
     async componentDidMount() {
         await Calendar.requestPermissionsAsync();
         await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -173,7 +173,6 @@ export default class HomeScreen extends Component<any> {
 
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-<Receiver />
                 <ScrollView>
                     <View style={styles.containerData}>
                         <View style={{ marginTop: 15, marginLeft: 30, marginRight: 30 }}>
@@ -191,7 +190,7 @@ export default class HomeScreen extends Component<any> {
                         <View style={{ flex: 0.5 }}>
                             <TouchableOpacity style={styles.btnGuardados} onPress={() => { this.props.navigation.navigate('Favs') }}>
                                 <Image source={require('../../assets/icons/heart.png')}
-                                    style={{ width: 15, height: 15, top: 25-7.5, marginRight: 8, position: 'absolute', left: width<370?20:35 }} />
+                                    style={{ width: 15, height: 15, top: 25 - 7.5, marginRight: 8, position: 'absolute', left: width < 370 ? 20 : 35 }} />
                                 <View style={styles.btnIcons}>
 
                                     <Text style={{ color: 'white', fontFamily: 'font2', position: 'relative', top: 1, fontSize: width < 370 ? 11 : 14 }}>GUARDADOS</Text>
@@ -292,7 +291,8 @@ export default class HomeScreen extends Component<any> {
 
                     </View>
                 </ScrollView>
-                <NavbarComponent props={this.props} data={'home'}/>
+                <NavbarComponent props={this.props} data={'home'} />
+                <Receiver />
 
             </View>
         );
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     },
     btnGuardados: {
         backgroundColor: '#ff5d5a',
-        position:'relative',
+        position: 'relative',
         marginLeft: 15,
         marginRight: 5,
         height: 50,
