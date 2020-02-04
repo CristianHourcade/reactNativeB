@@ -15,7 +15,9 @@ export function initializeApp() {
         appId: "1:998862870360:web:8cce7e0ea60f7298a3772d",
         measurementId: "G-FGHFDNY8K8"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     // firebase.analytics(app);
 }
 

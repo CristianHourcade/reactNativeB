@@ -22,6 +22,11 @@ import * as Permissions from 'expo-permissions';
 import Geocoder from 'react-native-geocoding';
 import * as Calendar from 'expo-calendar';
 import Receiver from '../receiverNotification';
+import ActionScreen from '../actions-screen';
+import MyAccountScreen from '../my-accoutn-screen';
+import {
+    MaterialIcons, MaterialCommunityIcons
+} from '@expo/vector-icons';
 
 var width = Dimensions.get('window').width - 30; //full width
 
@@ -79,6 +84,7 @@ export default class HomeScreen extends Component<any> {
     state = {
         listProducts: null,
         input: null,
+        tabActive: 1,
     }
 
 
@@ -164,6 +170,152 @@ export default class HomeScreen extends Component<any> {
     }
 
 
+    layoutOfHomeScreen = () => {
+        return (
+            <ScrollView>
+                <View style={styles.containerData}>
+                    <View style={{ marginTop: 15, marginLeft: 30, marginRight: 30 }}>
+                        <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}>Encontrá el alquiler</Text>
+                        <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}> de tus sueños</Text>
+                    </View>
+                    <View style={styles.buscadorGroup}>
+
+                        <TextInput style={styles.inputBuscador} value={this.state.input} onChangeText={(e) => this.setState({ input: e })}
+                            keyboardType='web-search' onSubmitEditing={(e) => { this.goToListFromHomeInput(e) }}
+                            placeholderTextColor="#000000" placeholder="¿En qué barrio estas buscando alojarte?" />
+                    </View>
+                </View>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                    <View style={{ flex: 0.5 }}>
+                        <TouchableOpacity style={styles.btnGuardados} onPress={() => { this.props.navigation.navigate('Favs') }}>
+                            {/* <Image source={require('../../assets/icons/heart.png')}
+                                style={{ width: 15, height: 15, top: 25 - 7.5, marginRight: 8, position: 'absolute', left: width < 370 ? 20 : 35 }} /> */}
+
+                            <View style={styles.btnIcons}>
+
+                                <MaterialIcons name="favorite-border" size={18} color="white" />
+
+                                <Text style={{ color: 'white', fontFamily: 'font2', position: 'relative', top: 1, marginLeft: 8, fontSize: width < 370 ? 11 : 14 }}>GUARDADOS</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ flex: 0.5 }}>
+                        <TouchableOpacity style={styles.btnMapa} onPress={() => this.props.navigation.navigate('Maps')}>
+                            <View style={styles.btnIcons}>
+
+                                <MaterialCommunityIcons name="google-maps" size={24} color='#ff5d5a' />
+
+                                <Text style={{ color: '#ff5d5a', fontFamily: 'font2', position: 'relative', top: 1, marginLeft: 8, fontSize: width < 370 ? 11 : 14 }} >BUSCAR EN EL MAPA</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ paddingBottom: 95 }}>
+                    <View style={{ marginTop: 30 }}>
+                        <MyCarousel />
+                    </View>
+
+                    <View style={styles.titleSectionContent}>
+                        <Text style={styles.titleSection}>Alquileres en tu zona</Text>
+                        <Text style={styles.descriptionSection}>Estos son algunos de los alquileres que están cerca de tu ubicación.</Text>
+                    </View>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: 15, marginRight: 15, marginTop: 20 }}>
+                        <View style={{ flex: 0.5, marginRight: 15, }}>
+
+
+                            <CardPropiedadHome
+                                images={this.state.listProducts[0].images}
+                                title={this.state.listProducts[0].name}
+                                price={this.state.listProducts[0].price}
+                                navigation={this.props.navigation}
+                                product={this.state.listProducts[0]} />
+
+
+                        </View>
+                        <View style={{ flex: 0.5 }}>
+
+                            <CardPropiedadHome
+                                images={this.state.listProducts[1].images}
+                                title={this.state.listProducts[1].name}
+                                price={this.state.listProducts[1].price}
+                                navigation={this.props.navigation}
+                                product={this.state.listProducts[1]} />
+
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: 15, marginRight: 15, marginTop: 20 }}>
+                        <View style={{ flex: 0.5, marginRight: 15, }}>
+
+                            <CardPropiedadHome
+                                images={this.state.listProducts[2].images}
+                                title={this.state.listProducts[2].name}
+                                price={this.state.listProducts[2].price}
+                                navigation={this.props.navigation}
+                                product={this.state.listProducts[2]} />
+                        </View>
+                        <View style={{ flex: 0.5 }}>
+
+                            <CardPropiedadHome
+                                images={this.state.listProducts[3].images}
+                                title={this.state.listProducts[3].name}
+                                price={this.state.listProducts[3].price}
+                                navigation={this.props.navigation}
+                                product={this.state.listProducts[3]} />
+
+                        </View>
+                    </View>
+
+
+                    <View style={{ paddingBottom: 45 }}>
+                        <TouchableOpacity style={styles.btnVerMas} onPress={() => this.goToList()}>
+                            <Text style={{ color: 'white', fontFamily: 'font2', position: 'relative', top: 1 }}>VER MÁS ALQUILERES EN MI ZONA</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <ImageBackground source={require('../../assets/bg-example.png')} style={{ width: width + 30, minHeight: 250, justifyContent: 'center' }}>
+                        <View style={{ marginTop: 5, paddingLeft: 15, paddingRight: 30 }}>
+                            <Text style={{
+                                fontFamily: 'font2',
+                                fontSize: 28, textAlign: 'center'
+                            }}>¿Tenés una propiedad?</Text>
+                            <Text style={{
+                                fontFamily: 'font1',
+                                fontSize: 14, textAlign: 'center'
+                            }}>Alquilá tu propiedad con Rentify y generá una ganancia mensual de hasta $36.000 / Mes</Text>
+                        </View>
+                        <View>
+                            <TouchableOpacity style={styles.btnOutline} onPress={() => this.props.navigation.navigate('AddProducto')}>
+                                <Text style={{ color: '#ff5d5a', fontFamily: 'font2', position: 'relative', top: 1 }}>PUBLICAR MI PROPIEDAD</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ImageBackground>
+
+                </View>
+            </ScrollView>
+        );
+    }
+
+    lookScreenActive = () => {
+        switch (this.state.tabActive) {
+            case 1:
+                return this.layoutOfHomeScreen();
+                break;
+            case 2:
+                return <ActionScreen    route={this.props.navigation} />
+                break;
+            case 3:
+                return <MyAccountScreen route={this.props.navigation} />
+                break;
+        }
+    };
+
+    changeNavigation = (data) => {
+        this.setState({ tabActive: data });
+    }
+
     render() {
         if (this.state.listProducts === null) {
             return (<Spinner
@@ -173,125 +325,10 @@ export default class HomeScreen extends Component<any> {
 
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-                <ScrollView>
-                    <View style={styles.containerData}>
-                        <View style={{ marginTop: 15, marginLeft: 30, marginRight: 30 }}>
-                            <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}>Encontrá el alquiler</Text>
-                            <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}> de tus sueños</Text>
-                        </View>
-                        <View style={styles.buscadorGroup}>
-                            <Image source={require('../../assets/lupa.png')} style={styles.searchIcon} />
-                            <TextInput style={styles.inputBuscador} value={this.state.input} onChangeText={(e) => this.setState({ input: e })}
-                                keyboardType='web-search' onSubmitEditing={(e) => { this.goToListFromHomeInput(e) }}
-                                placeholderTextColor="#000000" placeholder="¿En qué barrio estas buscando alojarte?" />
-                        </View>
-                    </View>
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <View style={{ flex: 0.5 }}>
-                            <TouchableOpacity style={styles.btnGuardados} onPress={() => { this.props.navigation.navigate('Favs') }}>
-                                <Image source={require('../../assets/icons/heart.png')}
-                                    style={{ width: 15, height: 15, top: 25 - 7.5, marginRight: 8, position: 'absolute', left: width < 370 ? 20 : 35 }} />
-                                <View style={styles.btnIcons}>
 
-                                    <Text style={{ color: 'white', fontFamily: 'font2', position: 'relative', top: 1, fontSize: width < 370 ? 11 : 14 }}>GUARDADOS</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 0.5 }}>
-                            <TouchableOpacity style={styles.btnMapa} onPress={() => this.props.navigation.navigate('Maps')}>
-                                <View style={styles.btnIcons}>
-                                    <Image source={require('../../assets/icons/placeholder.png')} style={{ width: 15, height: 15, marginRight: 8 }} />
-                                    <Text style={{ color: '#ff5d5a', fontFamily: 'font2', position: 'relative', top: 1, fontSize: width < 370 ? 11 : 14 }} >BUSCAR EN EL MAPA</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={{ paddingBottom: 95 }}>
-                        <View style={{ marginTop: 30 }}>
-                            <MyCarousel />
-                        </View>
+                {this.lookScreenActive()}
 
-                        <View style={styles.titleSectionContent}>
-                            <Text style={styles.titleSection}>Alquileres en tu zona</Text>
-                            <Text style={styles.descriptionSection}>Estos son algunos de los alquileres que están cerca de tu ubicación.</Text>
-                        </View>
-
-
-                        <View style={{ flex: 1, flexDirection: 'row', marginLeft: 15, marginRight: 15, marginTop: 20 }}>
-                            <View style={{ flex: 0.5, marginRight: 15, }}>
-
-
-                                <CardPropiedadHome
-                                    images={this.state.listProducts[0].images}
-                                    title={this.state.listProducts[0].name}
-                                    price={this.state.listProducts[0].price}
-                                    navigation={this.props.navigation}
-                                    product={this.state.listProducts[0]} />
-
-
-                            </View>
-                            <View style={{ flex: 0.5 }}>
-
-                                <CardPropiedadHome
-                                    images={this.state.listProducts[1].images}
-                                    title={this.state.listProducts[1].name}
-                                    price={this.state.listProducts[1].price}
-                                    navigation={this.props.navigation}
-                                    product={this.state.listProducts[1]} />
-
-                            </View>
-                        </View>
-
-                        <View style={{ flex: 1, flexDirection: 'row', marginLeft: 15, marginRight: 15, marginTop: 20 }}>
-                            <View style={{ flex: 0.5, marginRight: 15, }}>
-
-                                <CardPropiedadHome
-                                    images={this.state.listProducts[2].images}
-                                    title={this.state.listProducts[2].name}
-                                    price={this.state.listProducts[2].price}
-                                    navigation={this.props.navigation}
-                                    product={this.state.listProducts[2]} />
-                            </View>
-                            <View style={{ flex: 0.5 }}>
-
-                                <CardPropiedadHome
-                                    images={this.state.listProducts[3].images}
-                                    title={this.state.listProducts[3].name}
-                                    price={this.state.listProducts[3].price}
-                                    navigation={this.props.navigation}
-                                    product={this.state.listProducts[3]} />
-
-                            </View>
-                        </View>
-
-
-                        <View style={{ paddingBottom: 45 }}>
-                            <TouchableOpacity style={styles.btnVerMas} onPress={() => this.goToList()}>
-                                <Text style={{ color: 'white', fontFamily: 'font2', position: 'relative', top: 1 }}>VER MÁS ALQUILERES EN MI ZONA</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <ImageBackground source={require('../../assets/bg-example.png')} style={{ width: width + 30, minHeight: 250, justifyContent: 'center' }}>
-                            <View style={{ marginTop: 5, paddingLeft: 15, paddingRight: 30 }}>
-                                <Text style={{
-                                    fontFamily: 'font2',
-                                    fontSize: 28, textAlign: 'center'
-                                }}>¿Tenés una propiedad?</Text>
-                                <Text style={{
-                                    fontFamily: 'font1',
-                                    fontSize: 14, textAlign: 'center'
-                                }}>Alquilá tu propiedad con Rentify y generá una ganancia mensual de hasta $36.000 / Mes</Text>
-                            </View>
-                            <View>
-                                <TouchableOpacity style={styles.btnOutline} onPress={() => this.props.navigation.navigate('AddProducto')}>
-                                    <Text style={{ color: '#ff5d5a', fontFamily: 'font2', position: 'relative', top: 1 }}>PUBLICAR MI PROPIEDAD</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </ImageBackground>
-
-                    </View>
-                </ScrollView>
-                <NavbarComponent props={this.props} data={'home'} />
+                <NavbarComponent props={this.props} data={'home'} tab={this.state.tabActive} callback={this.changeNavigation} />
                 <Receiver />
 
             </View>
@@ -437,7 +474,8 @@ const styles = StyleSheet.create({
         height: 50,
         width: width,
         padding: 15,
-        fontSize: width < 370 ? 10 : 14,
+        fontSize: width < 370 ? 12 : 14,
+        textAlign: 'center',
         backgroundColor: '#eee',
         borderRadius: 5,
     },

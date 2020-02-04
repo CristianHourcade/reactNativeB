@@ -10,6 +10,9 @@ import { getChatByKey } from '../../utilities/ChatsModule';
 import { getClientsByKeyPantallaProducto } from '../../utilities/ClientsModule';
 import { Notifications } from 'expo';
 import registerForPushNotificationsAsync from './FirebaseFCModule';
+//screen A
+import { DeviceEventEmitter } from 'react-native'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
@@ -35,6 +38,9 @@ export default class UIMessagesScreen extends Component<any> {
     heLayout;
 
     _notificationSubscription;
+
+
+
 
     async componentDidMount() {
         const user = await AsyncStorage.getItem('Usuario');
@@ -63,16 +69,13 @@ export default class UIMessagesScreen extends Component<any> {
                 if (e.messages !== undefined) {
                     let x = e.messages[e.messages.length - 1].status;
                     let y = e.messages[e.messages.length - 1].own;
-                    alert("aca llego")
                     if (x === 0) {
-                        alert("aca llego1")
-
                         if (y !== this.state.user.$key) {
-                            alert("aca llego2")
 
                             this.state.chatJSON.messages[e.messages.length - 1].status = 1;
-                            updateChatWithoutEditUser(this.state.chatJSON.razon, this.state.chatJSON).then( async e => {
-                                await AsyncStorage.setItem('ListMensajes', JSON.stringify(this.state.chatJSON));
+                            updateChatWithoutEditUser(this.state.chatJSON.razon, this.state.chatJSON).then(e => {
+                                DeviceEventEmitter.emit('your listener', {})
+
                             })
 
                         }
@@ -168,6 +171,7 @@ export default class UIMessagesScreen extends Component<any> {
                     }
                 });
             });
+
             this.autoNotification();
             await Promise.all(data).then(async e => {
                 await AsyncStorage.setItem('Pr', JSON.stringify(productData)).then(async e => {
@@ -176,6 +180,7 @@ export default class UIMessagesScreen extends Component<any> {
                     });
                 })
             });
+
         });
 
     }
@@ -184,7 +189,9 @@ export default class UIMessagesScreen extends Component<any> {
 
         let index = 0;
         if (this.state.receiber === null || this.state.chatJSON === null) {
-            return <Text>Cargando...</Text>
+            return <Spinner
+                visible={true}
+                textContent={''} />
         }
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
@@ -256,7 +263,7 @@ export default class UIMessagesScreen extends Component<any> {
                     flexDirection: 'row', backgroundColor: 'white'
                 }}>
 
-                    <TouchableOpacity style={{ flex: 0.2, elevation: 11, justifyContent: "center", alignItems: 'flex-start' }} onPress={() => { this.props.navigation.replace('Action') }}>
+                    <TouchableOpacity style={{ flex: 0.2, elevation: 11, justifyContent: "center", alignItems: 'flex-start' }} onPress={() => { this.props.navigation.goBack() }}>
                         <Image source={require('../../assets/arrow_b.png')} style={{ width: 25, height: 25, marginLeft: 15 }} />
                     </TouchableOpacity>
 

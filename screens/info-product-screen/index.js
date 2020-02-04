@@ -58,11 +58,16 @@ export default class InfoProductScreen extends Component<any> {
         return (diff / (1000 * 60 * 60 * 24)).toString();
     }
 
-    async componentWillMount() {
+    componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', () => {
-            this.props.navigation.goBack();
+            alert('volver')
+            this.props.navigation.navigate('Home');
             return true;
         });
+    }
+    
+    async componentWillMount() {
+
 
         var data = await AsyncStorage.getItem('Selected');
         data = JSON.parse(data);

@@ -51,8 +51,8 @@ export default class ReservationScreen extends Component<any> {
             if (this.state.webView !== null) {
                 return false;
             }
-            this.props.navigation.goBack();
-            return true;
+            this.props.navigation.replace('InfoProduct');
+            return true; 
         });
         var data = await AsyncStorage.getItem('Selected');
         data = JSON.parse(data);

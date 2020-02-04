@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Platform, Text, TextInput, View, TouchableOpacity, Image, ImageBackground, Button, ScrollView, StatusBar, AsyncStorage, TouchableHighlight, BackHandler } from 'react-native';
+import { StyleSheet, Platform, Text, TextInput, View, TouchableOpacity, Image, ImageBackground, Button, ScrollView, StatusBar, AsyncStorage, TouchableHighlight, BackHandler, DeviceEventEmitter } from 'react-native';
 
 import { LogOut, getProductsByKey } from '../../utilities/FirebaseModule';
 
@@ -40,12 +40,15 @@ export default class ActionScreen extends Component<any> {
     }
 
 
-    async componentWillUpdate() {
-
+    async componentWillMount() {
+        if (await AsyncStorage.getItem('isNotifcationR') == 'true') {
+            this.setState({ activeTab: 2 });
+            AsyncStorage.removeItem('isNotificationR');
+        }
     }
 
+
     getListOfReservations = async () => {
-       
         const user = await AsyncStorage.getItem('Usuario');
         let userData = JSON.parse(user);
         this.setState({ user: userData });
@@ -58,10 +61,7 @@ export default class ActionScreen extends Component<any> {
 
         if (JSON.parse(dataSaved) !== null && JSON.parse(dataSavedProducts) !== null) {
             this.setState({ reservations: JSON.parse(dataSaved), products: JSON.parse(dataSavedProducts) });
-            if (await AsyncStorage.getItem('isNotifcationR') == 'true') {
-                this.setState({ activeTab: 2 });
-                AsyncStorage.removeItem('isNotificationR');
-            }
+
             return;
         }
 
@@ -139,6 +139,10 @@ export default class ActionScreen extends Component<any> {
         }
     }
 
+    componentWillUpdate() {
+        DeviceEventEmitter.addListener('your listener', (e) => { this.getListOfReservations() });
+    }
+
     createChat = (keyReserva, keyRentador, keyCliente) => {
         let reservaJSON = null;
         this.state.reservations.map(e => {
@@ -154,19 +158,20 @@ export default class ActionScreen extends Component<any> {
                 }
             });
             if (aux) {
-                this.props.navigation.navigate("Message");
-                AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+                AsyncStorage.setItem("chat", JSON.stringify(reservaJSON)).then(e => {
+                    this.props.route.navigate("Message");
+                })
             } else {
                 createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
                     AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
-                    this.props.navigation.navigate("Message");
+                    this.props.route.navigate("Message");
 
                 });
             }
         } else {
             createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
                 AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
-                this.props.navigation.navigate("Message");
+                this.props.route.navigate("Message");
             });
         }
 
@@ -198,12 +203,11 @@ export default class ActionScreen extends Component<any> {
                     }
                 }
             });
-            this.setState({ reservations: aux, isSort: true });
+            this.setState({ reservations: aux.reverse(), isSort: true });
         }
 
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
-                <Receiver />
                 <ScrollView>
 
                     {this.state.activeTab === 1 ?
@@ -385,7 +389,7 @@ export default class ActionScreen extends Component<any> {
                         </View>
                         : null}
                 </ScrollView>
-                <NavbarComponent props={this.props} data={'action'} />
+                {/* <NavbarComponent props={this.props} data={'action'} /> */}
                 <View style={{ width: width + 30, height: 50, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 1 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
                         <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Messages</Text>

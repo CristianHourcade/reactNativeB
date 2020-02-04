@@ -88,6 +88,26 @@ export async function updateChat(key, message, user) {
             if (!doc.exists) {
                 alert("Surgió un error, volvé a intentarlo en un instante. Si el problema persiste, contacta al equipo de Rentify");
             } else {
+                var data = {
+                    to: DataIntegrantes.token,
+                    sound: 'default',
+                    title: 'Mensaje ' + user.nombre,
+                    body: message.message
+                };
+
+                var params = typeof data == 'string' ? data : Object.keys(data).map(
+                    function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) }
+                ).join('&');
+
+                var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+                xhr.open('POST', 'https://exp.host/--/api/v2/push/send');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState > 3 && xhr.status == 200) { alert(xhr.responseText); }
+                };
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(params);
+
                 fetch('http://changofree.com/phpServer/sendNotification.php?type=message&token=' + doc.data().token).then(e => {
                     alert('se envio');
                 }).catch(e => 'algo fallo');
@@ -130,7 +150,6 @@ export async function updateChatWithoutEditUser(key, message) {
     });
 
     await Promise.all(data).then(async e => {
-        alert(JSON.stringify(reservaData));
         await AsyncStorage.setItem('Pr', JSON.stringify(productData)).then(async e => {
             await AsyncStorage.setItem('ListMensajes', JSON.stringify(reservaData));
         })

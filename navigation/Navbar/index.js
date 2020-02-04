@@ -13,6 +13,9 @@ import CardPropiedadList from '../../components/Cards/cardPropiedadList';
 import CardPropiedadHome from '../../components/Cards/cardPropiedadHome';
 import Sidebar from '../../components/Sidebar';
 import Receiver from '../../screens/receiverNotification';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
+
+
 var width = Dimensions.get('window').width; //full width
 
 
@@ -22,30 +25,34 @@ export default class NavbarComponent extends Component<any> {
         super(props)
     }
     state = {
-        navActive: null
+        navActive: 1
     }
 
     render() {
-
+        console.log(this.props);
         return (
             <View style={styles.navbar}>
                 <View style={styles.itemNav}>
-                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate("Home"); this.setState({ navActive: 1 }) }}>
-                        <Image source={require('../../assets/icons/home.png')} style={{ width: 30, height: 30 }} />
+                    <TouchableOpacity onPress={() => { this.props.callback(1); this.setState({ navActive: 1 }) }}>
+                        <AntDesign name="home" size={28} color={this.state.navActive === 1 ? "#ff5d5a" : 'gray'} />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'home' ? '#ff5d5a' : 'gray' }}>Inicio</Text>
+                    <Text style={{ fontSize: 10, marginTop: 4, color:'gray' }}>Inicio</Text>
                 </View>
                 <View style={styles.itemNav}>
-                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate('Action'); this.setState({ navActive: 2 }) }}>
-                        <Image source={require('../../assets/icons/chat.png')} style={{ width: 30, height: 30 }} />
+
+                    <TouchableOpacity onPress={() => { this.props.callback(2); this.setState({ navActive: 2 }) }}>
+
+                        <AntDesign name="message1" size={28} color={this.state.navActive === 2 ? "#ff5d5a" : 'gray'} />
+                        {/* <Image source={require('../../assets/icons/chat.png')} style={{ width: 30, height: 30 }} /> */}
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'action' ? '#ff5d5a' : 'gray' }}>Reservas y mensajes</Text>
+                    <Text style={{ fontSize: 10, marginTop: 4, color: 'gray' }}>Reservas y mensajes</Text>
                 </View>
                 <View style={styles.itemNav}>
-                    <TouchableOpacity onPress={() => { this.props.props.navigation.navigate("Account") }}>
-                        <Image source={require('../../assets/icons/user-1.png')} style={{ width: 30, height: 30, }} />
+                    <TouchableOpacity onPress={() => { this.props.callback(3); this.setState({ navActive: 3 }) }} >
+                        <AntDesign name="user" size={28} color={this.state.navActive === 3 ? "#ff5d5a" : 'gray'} />
+
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 10, marginTop: 4, color: this.props.data === 'account' ? '#ff5d5a' : 'gray' }}>Mi Perfil</Text>
+                    <Text style={{ fontSize: 10, marginTop: 4, color:'gray' }}>Mi Perfil</Text>
                 </View>
 
             </View>

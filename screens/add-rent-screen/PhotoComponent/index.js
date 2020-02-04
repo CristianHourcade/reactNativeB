@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Image, StatusBar, View, Platform, Text, Button, TouchableOpacity, CameraRoll, ScrollView } from 'react-native';
 import { Dimensions } from 'react-native';
-import { number } from 'prop-types';
-import AddRentScreen from '../index';
-import * as ImageManipulator from 'expo-image-manipulator';
 
 var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height; //full width

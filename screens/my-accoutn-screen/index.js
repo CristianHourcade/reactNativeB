@@ -22,6 +22,10 @@ export default class MyAccountScreen extends Component<any> {
         });
     }
 
+    componentWillUnmount(){
+
+    }
+
     async componentDidUpdate() {
         const result = await AsyncStorage.getItem('Usuario');
         this.setState({ user: JSON.parse(result) })
@@ -39,7 +43,6 @@ export default class MyAccountScreen extends Component<any> {
         }
         return (
             <View>
-                <Receiver />
                 <ScrollView>
                     <View style={styles.containerData}>
                         <View style={{ marginTop: 45, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center' }}>
@@ -76,7 +79,7 @@ export default class MyAccountScreen extends Component<any> {
                             </TouchableOpacity>
                         </View>
                         <View style={{ flex: 0.5 }}>
-                            <TouchableOpacity style={styles.btnMapa} onPress={() => this.props.navigation.navigate('Maps')}>
+                            <TouchableOpacity style={styles.btnMapa} onPress={() => this.props.route.navigate('Maps')}>
                                 <View style={styles.btnIcons}>
                                     {/* <Image source={require('../../assets/icons/placeholder.png')} style={{ width: 15, height: 15, marginRight: 8 }} /> */}
                                     <Text style={{ color: '#ff5d5a', fontFamily: 'font2', position: 'relative', top: 1 }} >RETIRAR</Text>
@@ -93,12 +96,12 @@ export default class MyAccountScreen extends Component<any> {
 
 
                         <View style={{ marginTop: 30 }}>
-                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.navigation.navigate("Profile") }}>
+                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.route.navigate("Profile") }}>
                                 <Text style={{ color: '#131313', fontFamily: 'font3', position: 'relative', top: 1 }}>COMPLETAR MI PERFIL</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginTop: 0 }}>
-                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.navigation.navigate('History') }}>
+                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.route.navigate('History') }}>
                                 <Text style={{ color: '#131313', fontFamily: 'font3', position: 'relative', top: 1 }}>MI HISTORIAL</Text>
                             </TouchableOpacity>
                         </View>
@@ -109,19 +112,18 @@ export default class MyAccountScreen extends Component<any> {
                         </View>
 
                         <View style={{ marginTop: 0 }}>
-                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.navigation.navigate('MyProps') }}>
+                            <TouchableOpacity style={styles.btnVerMas} onPress={() => { this.props.route.navigate('MyProps') }}>
                                 <Text style={{ color: '#131313', fontFamily: 'font3', position: 'relative', top: 1 }}>MIS PROPIEDADES</Text>
                             </TouchableOpacity>
                         </View>
 
                         <View style={{ marginTop: 60 }}>
-                            <TouchableOpacity style={styles.btnGuardados} onPress={() => { AsyncStorage.clear().then(e => { this.props.navigation.replace('Login') }) }}>
+                            <TouchableOpacity style={styles.btnGuardados} onPress={() => { AsyncStorage.clear().then(e => { this.props.route.replace('Login') }) }}>
                                 <Text style={{ color: 'white', fontFamily: 'font3', position: 'relative', top: 1 }}>CERRAR SESIÓN</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </ScrollView>
-                <NavbarComponent props={this.props} data={'account'} />
 
             </View>
         )
