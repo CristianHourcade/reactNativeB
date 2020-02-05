@@ -24,6 +24,7 @@ import * as Calendar from 'expo-calendar';
 import { getReservationsForKey } from '../../utilities/ReservationModule';
 import { createNewChat, getChatByKeyToFindStatus } from '../../utilities/ChatsModule';
 import Receiver from '../receiverNotification';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 
 var width = Dimensions.get('window').width - 30; //full width
 var he = Dimensions.get('window').height; //full width
@@ -41,10 +42,7 @@ export default class ActionScreen extends Component<any> {
 
 
     async componentWillMount() {
-        if (await AsyncStorage.getItem('isNotifcationR') == 'true') {
-            this.setState({ activeTab: 2 });
-            AsyncStorage.removeItem('isNotificationR');
-        }
+
     }
 
 
@@ -205,7 +203,7 @@ export default class ActionScreen extends Component<any> {
             });
             this.setState({ reservations: aux.reverse(), isSort: true });
         }
-
+        let index = 0;
         return (
             <View style={{ backgroundColor: 'white', position: 'relative' }}>
                 <ScrollView>
@@ -215,7 +213,7 @@ export default class ActionScreen extends Component<any> {
                         <View style={{ paddingBottom: 95, marginTop: 50, minHeight: he }}>
 
                             <View style={styles.titleSectionContent}>
-                                <Text style={styles.titleSection}>Mis Mensajes</Text>
+                                <Text style={styles.titleSection}>Mis Consultas</Text>
                                 <Text style={styles.descriptionSection}>Este es el listado de tus ultimas conversaciones.</Text>
                             </View>
 
@@ -344,8 +342,9 @@ export default class ActionScreen extends Component<any> {
                                 </View>
                                 :
                                 this.state.reservations.map(eDate => {
+                                    index++
                                     return (
-                                        <TouchableOpacity onPress={() => { this.createChat(eDate.key, eDate.keyRentador, eDate.keyInquilino); }}>
+                                        <TouchableOpacity key={index} onPress={() => { this.createChat(eDate.key, eDate.keyRentador, eDate.keyInquilino); }}>
                                             <View style={{
                                                 flex: 1,
                                                 borderRadius: 8,
@@ -377,7 +376,8 @@ export default class ActionScreen extends Component<any> {
 
                                                 </View>
                                                 <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'flex-end' }}>
-                                                    <Image source={require('../../assets/arrow_b.png')} style={{ width: 24, height: 24, rotation: 180 }} />
+                                                    <AntDesign name="right" size={24} color="black" />
+
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
@@ -392,11 +392,11 @@ export default class ActionScreen extends Component<any> {
                 {/* <NavbarComponent props={this.props} data={'action'} /> */}
                 <View style={{ width: width + 30, height: 50, position: 'absolute', top: 0, left: 0, flexDirection: 'row', elevation: 10, backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 1 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
-                        <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Messages</Text>
+                        <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 1 ? '#3483fa' : '#696969' }}>Consultas</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => { this.setState({ activeTab: 2 }) }} style={{ flex: 0.5, elevation: 11, justifyContent: "center", alignItems: 'center' }}>
-                        <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 2 ? '#3483fa' : '#696969' }}>Reservations</Text>
+                        <Text style={{ fontFamily: 'font1', color: this.state.activeTab === 2 ? '#3483fa' : '#696969' }}>Reservaciones</Text>
                     </TouchableOpacity>
                 </View>
             </View>

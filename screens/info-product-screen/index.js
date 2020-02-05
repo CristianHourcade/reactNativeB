@@ -65,7 +65,7 @@ export default class InfoProductScreen extends Component<any> {
             return true;
         });
     }
-    
+
     async componentWillMount() {
 
 
@@ -332,7 +332,7 @@ export default class InfoProductScreen extends Component<any> {
                     </Text>
                             </TouchableOpacity>
                         </View>
-                        <View>
+                        {/* <View>
                             <TouchableOpacity style={{
                                 height: 50,
                                 width: width - 40,
@@ -348,7 +348,7 @@ export default class InfoProductScreen extends Component<any> {
                                     Buscar Compañeros
                     </Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
 
                         <View style={{ borderBottomWidth: 1, borderBottomColor: '#eee', marginTop: 10, marginBottom: 10 }} />
 

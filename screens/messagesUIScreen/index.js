@@ -212,7 +212,9 @@ export default class UIMessagesScreen extends Component<any> {
                                     index++;
 
                                     return (
-                                        <View style={{
+                                        <View 
+                                        key={index}
+                                        style={{
                                             width: (width + 30) * 70 / 100,
                                             marginLeft: (e.own === this.state.user.$key) ? (width + 30) * 30 / 100 - 15 : 15,
                                             shadowColor: "#000",

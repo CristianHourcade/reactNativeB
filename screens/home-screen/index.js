@@ -25,7 +25,7 @@ import Receiver from '../receiverNotification';
 import ActionScreen from '../actions-screen';
 import MyAccountScreen from '../my-accoutn-screen';
 import {
-    MaterialIcons, MaterialCommunityIcons
+    MaterialIcons, MaterialCommunityIcons, AntDesign
 } from '@expo/vector-icons';
 
 var width = Dimensions.get('window').width - 30; //full width
@@ -174,6 +174,7 @@ export default class HomeScreen extends Component<any> {
         return (
             <ScrollView>
                 <View style={styles.containerData}>
+                    
                     <View style={{ marginTop: 15, marginLeft: 30, marginRight: 30 }}>
                         <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}>Encontrá el alquiler</Text>
                         <Text style={{ fontSize: width < 370 ? 24 : 28, fontFamily: 'font2', textAlign: 'center' }}> de tus sueños</Text>
@@ -188,6 +189,7 @@ export default class HomeScreen extends Component<any> {
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <View style={{ flex: 0.5 }}>
                         <TouchableOpacity style={styles.btnGuardados} onPress={() => { this.props.navigation.navigate('Favs') }}>
+                       
                             {/* <Image source={require('../../assets/icons/heart.png')}
                                 style={{ width: 15, height: 15, top: 25 - 7.5, marginRight: 8, position: 'absolute', left: width < 370 ? 20 : 35 }} /> */}
 
@@ -211,6 +213,22 @@ export default class HomeScreen extends Component<any> {
                     </View>
                 </View>
                 <View style={{ paddingBottom: 95 }}>
+                    <View style={{ marginLeft: 15, marginTop: 20, }}>
+                        <View style={{
+                            height: 60, width: width, justifyContent: 'center', alignItems: 'flex-start',
+                            backgroundColor: '#ff322e91',borderWidth:1.7,borderColor:'#ff5d5a', borderRadius: 25,
+                        }}>
+
+                            <View >
+                                <View style={{ position: 'absolute',left:18,bottom:-2 }}>
+                                    <AntDesign name="exclamationcircle" size={24} color='white' />
+                                </View>
+                                <Text style={{ color: 'white',marginLeft:55,position:'relative',top:2, fontFamily: 'font3' }}>
+                                    En 7 días finaliza tu estadía
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
                     <View style={{ marginTop: 30 }}>
                         <MyCarousel />
                     </View>
@@ -304,7 +322,7 @@ export default class HomeScreen extends Component<any> {
                 return this.layoutOfHomeScreen();
                 break;
             case 2:
-                return <ActionScreen    route={this.props.navigation} />
+                return <ActionScreen route={this.props.navigation} />
                 break;
             case 3:
                 return <MyAccountScreen route={this.props.navigation} />
