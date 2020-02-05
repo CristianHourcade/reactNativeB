@@ -49,6 +49,40 @@ export default class InfoProductScreen extends Component<any> {
         this.setState({ isOpenMatch1: false, isOpenMatch2: true });
     }
 
+    // createChat = (keyReserva, keyRentador, keyCliente) => {
+    //     let reservaJSON = null;
+    //     this.state.reservations.map(e => {
+    //         if (e.key === keyReserva) {
+    //             reservaJSON = e;
+    //         }
+    //     });
+    //     if (this.state.user.chat !== undefined) {
+    //         let aux = false;
+    //         this.state.user.chat.map(e => {
+    //             if (e === keyReserva) {
+    //                 aux = true;
+    //             }
+    //         });
+    //         if (aux) {
+    //             AsyncStorage.setItem("chat", JSON.stringify(reservaJSON)).then(e => {
+    //                 this.props.route.navigate("Message");
+    //             })
+    //         } else {
+    //             createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
+    //                 AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+    //                 this.props.route.navigate("Message");
+
+    //             });
+    //         }
+    //     } else {
+    //         createNewChat(keyReserva, keyRentador, keyCliente, this.state.user).then(e => {
+    //             AsyncStorage.setItem("chat", JSON.stringify(reservaJSON));
+    //             this.props.route.navigate("Message");
+    //         });
+    //     }
+
+    // }
+
     calculateDays = () => {
         var f = new Date();
         var fechaInicio = new Date(this.state.productUser.fechaIngreso).getTime();
